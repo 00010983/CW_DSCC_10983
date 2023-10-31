@@ -16,6 +16,10 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = C:\Users\Dilmurod\Desktop\CW_DSCC_10983\CW_DSCC_10983_MVC\CW_DSCC_10983_MVC
 build_property._RazorSourceGeneratorDebug = 
 
+[C:/Users/Dilmurod/Desktop/CW_DSCC_10983/CW_DSCC_10983_MVC/CW_DSCC_10983_MVC/Views/Customer/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3VzdG9tZXJcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Dilmurod/Desktop/CW_DSCC_10983/CW_DSCC_10983_MVC/CW_DSCC_10983_MVC/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 

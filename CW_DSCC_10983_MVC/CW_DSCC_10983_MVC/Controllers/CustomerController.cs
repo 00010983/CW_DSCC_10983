@@ -1,14 +1,23 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using CW_DSCC_10983_MVC.Service;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CW_DSCC_10983_MVC.Controllers
 {
     public class CustomerController : Controller
     {
-        // GET: CustomerController
-        public ActionResult Index()
+        private readonly IRepository _apiService;
+
+        public CustomerController(IRepository apiService)
         {
-            return View();
+            _apiService = apiService;
+        }
+
+        // GET: CustomerController
+        public async Task<IActionResult> Index()
+        {
+            var customers = await _apiService.GetAllCustomers();
+            return View(customers);
         }
 
         // GET: CustomerController/Details/5

@@ -20,4 +20,3 @@ namespace CW_DSCC_10983_MVC.Models
         public Customer Customer { get; set; }
     }
 }
-}
