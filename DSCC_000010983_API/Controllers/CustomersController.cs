@@ -10,7 +10,7 @@ using DSCC_000010983_API.Models;
 
 namespace DSCC_000010983_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class CustomersController : ControllerBase
     {

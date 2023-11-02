@@ -1,92 +1,30 @@
-﻿using CW_DSCC_10983_MVC.Service;
-using Microsoft.AspNetCore.Http;
+﻿using CW_DSCC_10983_MVC.Models;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace CW_DSCC_10983_MVC.Controllers
 {
     public class CustomerController : Controller
     {
-        private readonly IRepository _apiService;
+        Uri baseAddress = new Uri("http://localhost:44398/api");
+        private readonly HttpClient _httpClient;
 
-        public CustomerController(IRepository apiService)
+        public CustomerController()
         {
-            _apiService = apiService;
+            _httpClient = new HttpClient();
+            _httpClient.BaseAddress = baseAddress;
         }
-
-        // GET: CustomerController
-        public async Task<IActionResult> Index()
+        [HttpGet]
+        public IActionResult Index()
         {
-            var customers = await _apiService.GetAllCustomers();
-            return View(customers);
-        }
-
-        // GET: CustomerController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: CustomerController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: CustomerController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
+            List<Customer> customerlist = new List<Customer>();
+            HttpResponseMessage response = _httpClient.GetAsync("https://localhost:44398/api/Customers/GetCustomers").Result;
+            if(response.IsSuccessStatusCode) 
             {
-                return RedirectToAction(nameof(Index));
+                string data = response.Content.ReadAsStringAsync().Result;
+                customerlist = JsonConvert.DeserializeObject<List<Customer>>(data);
             }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: CustomerController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: CustomerController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: CustomerController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: CustomerController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            return View(customerlist);
         }
     }
 }
