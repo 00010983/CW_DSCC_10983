@@ -32,9 +32,22 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
+            @if (!string.IsNullOrEmpty(ViewBag.errorMessage))
+            {
+                <div class="alert alert-danger">
+                    @ViewBag.errorMessage
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(ViewBag.successMessage))
+            {
+                <div class="alert alert-success">
+                    @ViewBag.successMessage
+                </div>
+            }
             @RenderBody()
         </main>
     </div>
+
 
     <footer class="border-top footer text-muted">
         <div class="container">
