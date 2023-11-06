@@ -2,7 +2,7 @@
 
 **Project Overview**
 
-This project is an implementation of an ASP.NET Core web application with an integrated microservice API. It serves as a front-end interface for managing and accessing data.
+This project is an implementation of an ASP.NET Core web application with an integrated microservice API. It serves as a front-end interface for managing and accessing data. In this case, example of Customers and Tickets, which connected with PrimaryKey CustomerId.
 
 **Key Features**
 
