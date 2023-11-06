@@ -17,6 +17,5 @@ namespace CW_DSCC_10983_MVC.Models
 
         [ForeignKey("CustomerId")]
         public int CustomerId { get; set; }
-        public Customer Customer { get; set; }
     }
 }

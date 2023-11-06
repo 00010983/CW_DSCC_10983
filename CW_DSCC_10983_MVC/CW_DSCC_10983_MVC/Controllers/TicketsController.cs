@@ -19,7 +19,7 @@ namespace CW_DSCC_10983_MVC.Controllers
         public IActionResult Index()
         {
             List<Ticket> ticketlist = new List<Ticket>();
-            HttpResponseMessage response = _httpClient.GetAsync("https://localhost:44398/api/Tickets/GetTickets").Result;
+            HttpResponseMessage response = _httpClient.GetAsync("https://localhost:44398/api/TicketsContoller/Get").Result;
             if (response.IsSuccessStatusCode)
             {
                 string data = response.Content.ReadAsStringAsync().Result;
@@ -39,7 +39,7 @@ namespace CW_DSCC_10983_MVC.Controllers
             {
                 string data = JsonConvert.SerializeObject(ticket);
                 StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
-                HttpResponseMessage response = _httpClient.PostAsync("https://localhost:44398/api/Tickets/PostTicket", content).Result;
+                HttpResponseMessage response = _httpClient.PostAsync("https://localhost:44398/api/TicketsContoller/Post", content).Result;
                 if (response.IsSuccessStatusCode)
                 {
                     TempData["successMessage"] = "Ticket Created";
@@ -59,7 +59,7 @@ namespace CW_DSCC_10983_MVC.Controllers
             try
             {
                 Ticket ticket = new Ticket();
-                HttpResponseMessage response = _httpClient.GetAsync("https://localhost:44398/api/Tickets/Get/" + id).Result;
+                HttpResponseMessage response = _httpClient.GetAsync("https://localhost:44398/api/TicketsContoller/Get/" + id).Result;
                 if (response.IsSuccessStatusCode)
                 {
                     string data = response.Content.ReadAsStringAsync().Result;
@@ -81,7 +81,7 @@ namespace CW_DSCC_10983_MVC.Controllers
             {
                 string data = JsonConvert.SerializeObject(ticket);
                 StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
-                HttpResponseMessage response = _httpClient.PostAsync("https://localhost:44398/api/Tickets/Put", content).Result;
+                HttpResponseMessage response = _httpClient.PutAsync("https://localhost:44398/api/TicketsContoller/Put", content).Result;
                 if (response.IsSuccessStatusCode)
                 {
                     TempData["successMessage"] = "Ticket Edited";
@@ -102,13 +102,13 @@ namespace CW_DSCC_10983_MVC.Controllers
             try
             {
                 Ticket ticket = new Ticket();
-                HttpResponseMessage response = _httpClient.GetAsync("https://localhost:44398/api/Tickets/Get/" + id).Result;
+                HttpResponseMessage response = _httpClient.GetAsync("https://localhost:44398/api/TicketsContoller/Get/" + id).Result;
                 if (response.IsSuccessStatusCode)
                 {
-                    string data = response.Content?.ReadAsStringAsync().Result;
+                    string data = response.Content.ReadAsStringAsync().Result;
                     ticket = JsonConvert.DeserializeObject<Ticket>(data);
                 }
-                return View();
+                return View(ticket);
             }
             catch (Exception ex)
             {
@@ -122,7 +122,7 @@ namespace CW_DSCC_10983_MVC.Controllers
         {
             try
             {
-                HttpResponseMessage response = _httpClient.GetAsync("https://localhost:44398/api/Tickets/Delete/" + id).Result;
+                HttpResponseMessage response = _httpClient.DeleteAsync("https://localhost:44398/api/TicketsContoller/Delete/" + id).Result;
                 if (response.IsSuccessStatusCode)
                 {
                     TempData["successMessage"] = "Ticket Deleted";

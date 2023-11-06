@@ -17,6 +17,5 @@ namespace DSCC_000010983_API.Models
 
         [ForeignKey("CustomerId")]
         public int CustomerId { get; set; }
-        public Customer Customer { get; set; }
     }
 }

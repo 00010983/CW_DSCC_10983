@@ -1,124 +1,114 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using DSCC_000010983_API.Data;
+using DSCC_000010983_API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DSCC_000010983_API.Data;
-using DSCC_000010983_API.Models;
 
 namespace DSCC_000010983_API.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class CustomersController : ControllerBase
+    public class CustomerController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-
-        public CustomersController(ApplicationDbContext context)
+        public CustomerController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/Customers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
+        public IActionResult Get() 
         {
-          if (_context.Customers == null)
-          {
-              return NotFound();
-          }
-            return await _context.Customers.ToListAsync();
+            try
+            {
+                var customers = _context.Customers.ToList();
+                if (customers.Count == 0)
+                {
+                    return NotFound("Customers not available");
+                }
+                return Ok(customers);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        // GET: api/Customers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Customer>> GetCustomer(int id)
+        public IActionResult Get(int id) 
         {
-          if (_context.Customers == null)
-          {
-              return NotFound();
-          }
-            var customer = await _context.Customers.FindAsync(id);
-
-            if (customer == null)
+            try
             {
-                return NotFound();
+                var customer = _context.Customers.Find(id);
+                if (customer == null)
+                {
+                    return NotFound("Customer not found");
+                }
+                return Ok(customer);
             }
-
-            return customer;
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
-
-        // PUT: api/Customers/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCustomer(int id, Customer customer)
+        [HttpPost]
+        public IActionResult Post(Customer customer) 
         {
-            if (id != customer.CustomerId)
+            try
             {
-                return BadRequest();
+                _context.Add(customer);
+                _context.SaveChanges();
+                return Ok("Customer Created");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
 
-            _context.Entry(customer).State = EntityState.Modified;
+        }
+        [HttpPut]
+        public IActionResult Put(Customer model)
+        {
 
             try
             {
-                await _context.SaveChangesAsync();
+                var customer = _context.Customers.Find(model.CustomerId);
+                if (customer == null)
+                {
+                    return NotFound("Customer not found with id " + model.CustomerId);
+                }
+                customer.Name = model.Name;
+                customer.Email = model.Email;
+                customer.Address = model.Address;
+                customer.PhoneNumber = model.PhoneNumber;
+                customer.DateOfBirth = model.DateOfBirth;
+                _context.SaveChanges();
+                return Ok("Customer updated");
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!CustomerExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest(ex.Message);
             }
-
-            return NoContent();
+ 
         }
-
-        // POST: api/Customers
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Customer>> PostCustomer(Customer customer)
-        {
-          if (_context.Customers == null)
-          {
-              return Problem("Entity set 'ApplicationDbContext.Customers'  is null.");
-          }
-            _context.Customers.Add(customer);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetCustomer", new { id = customer.CustomerId }, customer);
-        }
-
-        // DELETE: api/Customers/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCustomer(int id)
+        public IActionResult Delete(int id)
         {
-            if (_context.Customers == null)
+            try
             {
-                return NotFound();
+                var customer = _context.Customers.Find(id);
+                if (customer == null)
+                {
+                    return NotFound($"Customer not found with id {id}");
+                }
+                _context.Customers.Remove(customer);
+                _context.SaveChanges();
+                return Ok("Cusomer deleted");
             }
-            var customer = await _context.Customers.FindAsync(id);
-            if (customer == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                return BadRequest(ex.Message);
             }
-
-            _context.Customers.Remove(customer);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool CustomerExists(int id)
-        {
-            return (_context.Customers?.Any(e => e.CustomerId == id)).GetValueOrDefault();
         }
     }
 }

@@ -10,115 +10,111 @@ using DSCC_000010983_API.Models;
 
 namespace DSCC_000010983_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
-    public class TicketsController : ControllerBase
+    public class TicketsContoller : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-
-        public TicketsController(ApplicationDbContext context)
+        public TicketsContoller(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/Tickets
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Ticket>>> GetTickets()
+        public IActionResult Get()
         {
-          if (_context.Tickets == null)
-          {
-              return NotFound();
-          }
-            return await _context.Tickets.ToListAsync();
+            try
+            {
+                var tickets = _context.Tickets.ToList();
+                if (tickets.Count == 0)
+                {
+                    return NotFound("Tickets not available");
+                }
+                return Ok(tickets);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        // GET: api/Tickets/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Ticket>> GetTicket(int id)
+        public IActionResult Get(int id)
         {
-          if (_context.Tickets == null)
-          {
-              return NotFound();
-          }
-            var ticket = await _context.Tickets.FindAsync(id);
-
-            if (ticket == null)
+            try
             {
-                return NotFound();
+                var ticket = _context.Tickets.Find(id);
+                if (ticket == null)
+                {
+                    return NotFound("Ticket not found");
+                }
+                return Ok(ticket);
             }
-
-            return ticket;
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
-
-        // PUT: api/Tickets/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutTicket(int id, Ticket ticket)
+        [HttpPost]
+        public IActionResult Post(Ticket ticket)
         {
-            if (id != ticket.TicketId)
+            try
             {
-                return BadRequest();
+                _context.Add(ticket);
+                _context.SaveChanges();
+                return Ok("Ticket Created");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
 
-            _context.Entry(ticket).State = EntityState.Modified;
+        }
+        [HttpPut]
+        public IActionResult Put(Ticket model)
+        {
 
             try
             {
-                await _context.SaveChangesAsync();
+                var ticket = _context.Tickets.Find(model.TicketId);
+                if (ticket == null)
+                {
+                    return NotFound("Ticket not found with id " + model.TicketId);
+                }
+                ticket.Title = model.Title;
+                ticket.Departure = model.Departure;
+                ticket.Arrival = model.Arrival;
+                ticket.Priority = model.Priority;
+                ticket.DueDate = model.DueDate;
+                ticket.Duration = model.Duration;
+                ticket.CustomerId = model.CustomerId;
+                _context.SaveChanges();
+                return Ok("Ticket updated");
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!TicketExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest(ex.Message);
             }
 
-            return NoContent();
         }
-
-        // POST: api/Tickets
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Ticket>> PostTicket(Ticket ticket)
-        {
-          if (_context.Tickets == null)
-          {
-              return Problem("Entity set 'ApplicationDbContext.Tickets'  is null.");
-          }
-            _context.Tickets.Add(ticket);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetTicket", new { id = ticket.TicketId }, ticket);
-        }
-
-        // DELETE: api/Tickets/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTicket(int id)
+        public IActionResult Delete(int id)
         {
-            if (_context.Tickets == null)
+            try
             {
-                return NotFound();
+                var ticket = _context.Tickets.Find(id);
+                if (ticket == null)
+                {
+                    return NotFound($"Ticket not found with id {id}");
+                }
+                _context.Tickets.Remove(ticket);
+                _context.SaveChanges();
+                return Ok("Ticket deleted");
             }
-            var ticket = await _context.Tickets.FindAsync(id);
-            if (ticket == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                return BadRequest(ex.Message);
             }
-
-            _context.Tickets.Remove(ticket);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool TicketExists(int id)
-        {
-            return (_context.Tickets?.Any(e => e.TicketId == id)).GetValueOrDefault();
         }
     }
 }

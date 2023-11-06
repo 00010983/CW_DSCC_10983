@@ -19,7 +19,7 @@ namespace CW_DSCC_10983_MVC.Controllers
         public IActionResult Index()
         {
             List<Customer> customerlist = new List<Customer>();
-            HttpResponseMessage response = _httpClient.GetAsync("https://localhost:44398/api/Customers/GetCustomers").Result;
+            HttpResponseMessage response = _httpClient.GetAsync("https://localhost:44398/api/Customer/Get").Result;
             if(response.IsSuccessStatusCode) 
             {
                 string data = response.Content.ReadAsStringAsync().Result;
@@ -39,7 +39,7 @@ namespace CW_DSCC_10983_MVC.Controllers
             {
                 string data = JsonConvert.SerializeObject(customer);
                 StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
-                HttpResponseMessage response = _httpClient.PostAsync("https://localhost:44398/api/Customers/PostCustomer", content).Result;
+                HttpResponseMessage response = _httpClient.PostAsync("https://localhost:44398/api/Customer/Post", content).Result;
                 if (response.IsSuccessStatusCode)
                 {
                     TempData["successMessage"] = "Customer Created";
@@ -59,7 +59,7 @@ namespace CW_DSCC_10983_MVC.Controllers
             try
             {
                 Customer customer = new Customer();
-                HttpResponseMessage response = _httpClient.GetAsync("https://localhost:44398/api/Customers/Get/" + id).Result;
+                HttpResponseMessage response = _httpClient.GetAsync("https://localhost:44398/api/Customer/Get/" + id).Result;
                 if (response.IsSuccessStatusCode)
                 {
                     string data = response.Content.ReadAsStringAsync().Result;
@@ -81,7 +81,7 @@ namespace CW_DSCC_10983_MVC.Controllers
             {
                 string data = JsonConvert.SerializeObject(customer);
                 StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
-                HttpResponseMessage response = _httpClient.PostAsync("https://localhost:44398/api/Customers/Put", content).Result;
+                HttpResponseMessage response = _httpClient.PutAsync($"https://localhost:44398/api/Customer/Put", content).Result;
                 if (response.IsSuccessStatusCode)
                 {
                     TempData["successMessage"] = "Customer Edited";
@@ -102,13 +102,13 @@ namespace CW_DSCC_10983_MVC.Controllers
             try
             {
                 Customer customer = new Customer();
-                HttpResponseMessage response = _httpClient.GetAsync("https://localhost:44398/api/Customers/Get/" + id).Result;
+                HttpResponseMessage response = _httpClient.GetAsync("https://localhost:44398/api/Customer/Get/" + id).Result;
                 if (response.IsSuccessStatusCode)
                 {
-                    string data = response.Content?.ReadAsStringAsync().Result;
+                    string data = response.Content.ReadAsStringAsync().Result;
                     customer = JsonConvert.DeserializeObject<Customer>(data);
                 }
-                return View();
+                return View(customer);
             }
             catch (Exception ex)
             {
@@ -122,34 +122,19 @@ namespace CW_DSCC_10983_MVC.Controllers
         {
             try
             {
-                HttpResponseMessage ticketsResponse = _httpClient.GetAsync("https://localhost:44398/api/Tickets/GetByCustomerId/" + id).Result;
-                if (ticketsResponse.IsSuccessStatusCode)
+                HttpResponseMessage response = _httpClient.DeleteAsync("https://localhost:44398/api/Customer/Delete/" + id).Result;
+                if (response.IsSuccessStatusCode)
                 {
-                    string ticketsData = ticketsResponse.Content.ReadAsStringAsync().Result;
-                    List<Ticket> associatedTickets = JsonConvert.DeserializeObject<List<Ticket>>(ticketsData);
-
-                    foreach (var ticket in associatedTickets)
-                    {
-                        HttpResponseMessage ticketDeleteResponse = _httpClient.GetAsync("https://localhost:44398/api/Tickets/Delete/" + ticket.Id).Result;
-                        if (!ticketDeleteResponse.IsSuccessStatusCode)
-                        {
-                            TempData["errorMessage"] = "Failed to delete associated tickets.";
-                            return RedirectToAction("Index");
-                        }
-                    }
-                    HttpResponseMessage customerDeleteResponse = _httpClient.GetAsync("https://localhost:44398/api/Customers/Delete/" + id).Result;
-                    if (customerDeleteResponse.IsSuccessStatusCode)
-                    {
-                        TempData["successMessage"] = "Customer and associated tickets deleted.";
-                        return RedirectToAction("Index");
-                    }
+                    TempData["successMessage"] = "Customer Deleted";
+                    return RedirectToAction("Index");
                 }
             }
             catch (Exception ex)
             {
                 TempData["errorMessage"] = ex.Message;
+                return View();
             }
-            return RedirectToAction("Index");
+            return View();
         }
 
     }
