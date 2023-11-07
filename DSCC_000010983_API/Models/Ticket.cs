@@ -19,3 +19,5 @@ namespace DSCC_000010983_API.Models
         public int CustomerId { get; set; }
     }
 }
+
+
